@@ -28,6 +28,12 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  flutter_secure_storage: ^5.0.2
+  dio: ^4.0.4
+  timetable:
+    git:
+      url: https://github.com/JonasWanke/timetable
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
@@ -38,6 +44,9 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
+  assets:
+    - packages/time_machine/data/cultures/cultures.bin
+    - packages/time_machine/data/tzdb/tzdb.bin
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
