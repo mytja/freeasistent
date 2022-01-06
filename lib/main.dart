@@ -1,15 +1,40 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:freeasistent/api.dart';
+import 'package:freeasistent/api/api.dart';
+import 'package:freeasistent/api/timetable.dart';
+import 'package:freeasistent/grades.dart';
 import 'package:freeasistent/login.dart';
-import 'package:intl/intl.dart';
-
-import 'package:timetable/timetable.dart';
+import 'package:freeasistent/ocenjevanja.dart';
+import 'package:freeasistent/scaffoldwidget.dart';
+import 'package:freeasistent/timetable.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(MyHomePage());
+  runApp(App());
+}
+
+class App extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        brightness: Brightness.light,
+        primarySwatch: Colors.blue,
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+      ),
+      themeMode: ThemeMode.system,
+      title: 'FreeAsistent',
+      initialRoute: "/koledar",
+      routes: {
+        "/koledar": (context) => MyHomePage(),
+        "/ocenjevanja": (context) => Ocenjevanja(),
+        "/ocene": (context) => Grades(),
+      },
+    );
+  }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -20,98 +45,79 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late final myDateController = DateController(
-    // All parameters are optional and displayed with their default value.
-    initialDate: DateTimeTimetable.today(),
-    visibleRange: VisibleDateRange.week(startOfWeek: DateTime.monday),
-  );
+  DateTime today =
+      DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1));
+  DateTime lastday = DateTime.now()
+      .add(Duration(days: DateTime.daysPerWeek - DateTime.now().weekday));
+
+  Future<List<Meeting>> getEvents() async {
+    UserData? data = await getToken();
+    if (data != null) {
+      final timetable = Timetable(user_data: data);
+      return await timetable.getTimetable(this.today, this.lastday);
+    }
+    return [];
+  }
+
+  final CalendarController _calendarController = CalendarController();
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                ),
-                child: Text('Drawer Header'),
-              ),
-              ListTile(
-                title: const Text('Item 1'),
-                onTap: () {},
-              ),
-              ListTile(
-                title: const Text('Item 2'),
-                onTap: () {},
-              ),
-            ],
-          ),
-        ),
-        appBar: AppBar(
-          title: Text("FreeAsistent"),
-        ),
-        body: FutureBuilder<UserData?>(
-          future: getToken(),
-          builder: (BuildContext context, AsyncSnapshot<UserData?> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Container(height: 1);
-            } else if (snapshot.hasError) {
+    return ScaffoldWidget(
+      body: FutureBuilder<List<Meeting>>(
+        future: getEvents(),
+        builder: (BuildContext context, AsyncSnapshot<List<Meeting>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator(
+              semanticsLabel: 'Pridobivam podatke, prosimo počakajte',
+            );
+          } else if (snapshot.hasError) {
+            return LoginDemo();
+          } else {
+            if (snapshot.data == null) {
               return LoginDemo();
-            } else {
-              if (snapshot.data == null) {
-                return LoginDemo();
-              }
-              return Center(
-                child: TimetableConfig<BasicEvent>(
-                  // Required:
-                  dateController: myDateController,
-                  eventBuilder: (context, event) => BasicEventWidget(event),
-                  child: MultiDateTimetable<BasicEvent>(),
-                  // Optional:
-                  eventProvider: (date) {
-                    final DateFormat formatter = DateFormat('yyyy-MM-dd');
-                    String from = formatter.format(date.start);
-                    String to = formatter.format(date.end);
-                    var response = await Dio()
-                        .get("$eAsUrl/m/timetable/weekly?from=$from&to=$to",
-                            options: Options(headers: {
-                              ...MobilePayload,
-                              'Authorization':
-                                  'Bearer ${snapshot.data!.access_token}',
-                              'x-child-id': '${snapshot.data!.id}',
-                            }));
-                    List<BasicEvent> events = [];
-                    for (var i in response.data["school_hour_events"])
-                      return BasicEvent(
-                          id: id,
-                          title: title,
-                          backgroundColor: backgroundColor,
-                          start: start,
-                          end: end);
-                  },
-                  allDayEventBuilder: (context, event, info) =>
-                      BasicAllDayEventWidget(event, info: info),
-                  callbacks: TimetableCallbacks(
-                      // onWeekTap, onDateTap, onDateBackgroundTap, onDateTimeBackgroundTap
-                      ),
-                  theme: TimetableThemeData(
-                    context,
-                    // startOfWeek: DateTime.monday,
-                    // See the "Theming" section below for more options.
-                  ),
-                ),
-              );
             }
-          },
-        ),
+            print(snapshot.data);
+            return SfCalendar(
+              controller: _calendarController,
+              initialSelectedDate: this.today.add(Duration(hours: 6)),
+              timeSlotViewSettings: TimeSlotViewSettings(
+                startHour: 6,
+                endHour: 16,
+              ),
+              view: CalendarView.workWeek,
+              firstDayOfWeek: DateTime.monday,
+              dataSource: MeetingDataSource(snapshot.data!),
+              onViewChanged: (ViewChangedDetails details) {
+                DateTime firstdate = details.visibleDates.first;
+                DateTime lastdate = details.visibleDates.last;
+                bool fd = this.today.month == firstdate.month &&
+                    this.today.day == firstdate.day &&
+                    this.today.year == firstdate.year;
+                bool ld = this.lastday.month == lastdate.month &&
+                    this.lastday.day == lastdate.day &&
+                    this.lastday.year == lastdate.year;
+                if (!fd && !ld) {
+                  print("View changed");
+                  Future.delayed(
+                    Duration.zero,
+                    () {
+                      setState(() {
+                        this.today = details.visibleDates.first;
+                        this.lastday = details.visibleDates.last;
+                      });
+                    },
+                  );
+                }
+              },
+            );
+          }
+        },
       ),
     );
   }

@@ -14,6 +14,13 @@ const Map<String, String> MobilePayload = {
   'x-client-platform': 'android',
 };
 
+const Map<String, String> WebPayload = {
+  'content-type': 'application/json',
+  'x-app-name': 'family',
+  'x-client-version': '13',
+  'x-client-platform': 'web',
+};
+
 class UserData {
   UserData({required this.access_token, required this.id});
 
@@ -21,34 +28,17 @@ class UserData {
   final String access_token;
 }
 
-class Timetable {
-  Timetable({required this.user_data});
-
-  final UserData user_data;
-
-  String getDate() {
-    DateTime today = DateTime.now();
-    DateTime sunday = DateTime(today);
-  }
-
-  Future<void> getTimetable() async {
-    await Dio().get("$eAsUrl/m/timetable/weekly?from=$from&to=$to",
-        options: Options(headers: {
-          ...MobilePayload,
-          'Authorization': 'Bearer ${snapshot.data!.access_token}',
-          'x-child-id': '${snapshot.data!.id}',
-        }));
-  }
-}
-
 Future<UserData?> getToken() async {
   String? token = await storage.read(key: "token");
+  print(token);
   if (token == null) {
     return null;
   }
-  var response = await Dio().post('$eAsUrl/m/refresh_token',
-      data: jsonEncode({'refresh_token': token}),
-      options: Options(headers: MobilePayload));
+  var response = await Dio().post(
+    '$eAsUrl/m/refresh_token',
+    data: jsonEncode({'refresh_token': token}),
+    options: Options(headers: MobilePayload),
+  );
   print(response.data);
 
   String refresh_token = response.data["refresh_token"];
@@ -56,7 +46,7 @@ Future<UserData?> getToken() async {
 
   return UserData(
     access_token: response.data["access_token"]["token"],
-    id: response.data["user"]["id"].toString(),
+    id: (await storage.read(key: "userId"))!,
   );
 }
 

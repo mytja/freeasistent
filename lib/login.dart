@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:freeasistent/api.dart';
+import 'package:freeasistent/api/api.dart';
 import 'package:freeasistent/main.dart';
 
 class LoginDemo extends StatefulWidget {
@@ -49,7 +49,7 @@ class _LoginDemoState extends State<LoginDemo> {
                 color: Colors.blue, borderRadius: BorderRadius.circular(20)),
             child: TextButton(
               onPressed: () async {
-                String token = await login(_username.text, _password.text);
+                UserData? token = await login(_username.text, _password.text);
                 Navigator.push(
                     context, MaterialPageRoute(builder: (_) => MyHomePage()));
               },
