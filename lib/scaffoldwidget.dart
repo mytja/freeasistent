@@ -52,6 +52,13 @@ class ScaffoldWidgetState extends State<ScaffoldWidget> {
                 Navigator.pushNamed(context, "/izostanki");
               },
             ),
+            Divider(),
+            ListTile(
+              title: const Text('Odjava'),
+              onTap: () {
+                Navigator.pushNamed(context, "/prijava");
+              },
+            ),
           ],
         ),
       ),

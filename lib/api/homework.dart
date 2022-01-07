@@ -48,15 +48,17 @@ class HomeworkAPI {
               }));
           widgets.add(
             Card(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+              child: ExpansionTile(
+                title: ListTile(
+                  title: Text(i["subject"]),
+                  subtitle: Text(i["title"]),
+                ),
                 children: <Widget>[
-                  ListTile(
-                    title: Text(i["subject"]),
-                    subtitle: Text(i["title"]),
+                  Text(
+                    'Do ${i["deadline"]}',
                   ),
                   Text(
-                    'Do: ${i["deadline"]}; Vpisal ${response.data["author"]}, dne ${i["date"]}',
+                    "Vpisal ${response.data["author"]}, dne ${i["date"]}",
                   ),
                   const SizedBox(height: 8),
                 ],

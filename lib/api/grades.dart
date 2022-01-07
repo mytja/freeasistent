@@ -41,16 +41,15 @@ class GradesAPI {
         var data = response.data["semesters"][0]["grades"][0];
         widgets.add(
           Card(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                ListTile(
-                  leading: CircleAvatar(
-                    child: Text(data["value"]),
-                  ),
-                  title: Text(response.data["short_name"]),
-                  subtitle: Text(response.data["name"]),
+            child: ExpansionTile(
+              title: ListTile(
+                leading: CircleAvatar(
+                  child: Text(data["value"]),
                 ),
+                title: Text(response.data["short_name"]),
+                subtitle: Text(response.data["name"]),
+              ),
+              children: <Widget>[
                 Text(
                   'Povprečna ocena: ' + response.data["average_grade"],
                 ),

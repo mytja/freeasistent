@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freeasistent/absences.dart';
 import 'package:freeasistent/api/api.dart';
 import 'package:freeasistent/api/timetable.dart';
 import 'package:freeasistent/grades.dart';
@@ -35,6 +36,8 @@ class App extends StatelessWidget {
         "/ocenjevanja": (context) => Ocenjevanja(),
         "/ocene": (context) => Grades(),
         "/domacenaloge": (context) => Homework(),
+        "/izostanki": (context) => Absences(),
+        "/prijava": (context) => LoginDemo(useScaffold: true),
       },
     );
   }
@@ -76,7 +79,26 @@ class _MyHomePageState extends State<MyHomePage> {
         future: getEvents(),
         builder: (BuildContext context, AsyncSnapshot<List<Meeting>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return LoadingIndicator();
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    "assets/play_store_512.png",
+                    height: 100,
+                    width: 100,
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    "FreeAsistent",
+                    style: TextStyle(fontSize: 30),
+                  )
+                ],
+              ),
+            );
           } else if (snapshot.hasError) {
             return LoginDemo();
           } else {

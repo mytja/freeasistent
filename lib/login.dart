@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:freeasistent/api/api.dart';
 import 'package:freeasistent/main.dart';
+import 'package:freeasistent/scaffoldwidget.dart';
 
 class LoginDemo extends StatefulWidget {
+  LoginDemo({this.useScaffold = false});
+
+  final bool useScaffold;
+
   @override
   _LoginDemoState createState() => _LoginDemoState();
 }
@@ -19,13 +24,17 @@ class _LoginDemoState extends State<LoginDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    Widget w = SingleChildScrollView(
+      physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
       child: Column(
         children: <Widget>[
           const SizedBox(
             height: 10,
           ),
-          const Text("PRIJAVA v FreeAsistent"),
+          const Text(
+            "PRIJAVA v FreeAsistent",
+            style: TextStyle(fontSize: 30),
+          ),
           const SizedBox(
             height: 10,
           ),
@@ -69,5 +78,9 @@ class _LoginDemoState extends State<LoginDemo> {
         ],
       ),
     );
+    if (widget.useScaffold) {
+      return ScaffoldWidget(body: w);
+    }
+    return w;
   }
 }

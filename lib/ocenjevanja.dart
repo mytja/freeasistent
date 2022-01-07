@@ -34,7 +34,11 @@ class Ocenjevanja extends StatelessWidget {
             if (snapshot.data == null) {
               return LoginDemo();
             }
-            return ListView(children: snapshot.data!);
+            return ListView(
+              children: snapshot.data!,
+              physics: BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics()),
+            );
           }
         },
       ),

@@ -30,9 +30,6 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_secure_storage: ^5.0.2
   dio: ^4.0.4
-  timetable:
-    git:
-      url: https://github.com/JonasWanke/timetable
   intl: ^0.17.0
   syncfusion_flutter_calendar: ^19.4.41
 
@@ -49,6 +46,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/play_store_512.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
