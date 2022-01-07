@@ -1,4 +1,4 @@
-package com.example.freeasistent
+package com.mytja.freeasistent
 
 import io.flutter.embedding.android.FlutterActivity
 
