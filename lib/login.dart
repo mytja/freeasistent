@@ -22,6 +22,13 @@ class _LoginDemoState extends State<LoginDemo> {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
+          const SizedBox(
+            height: 10,
+          ),
+          const Text("PRIJAVA v FreeAsistent"),
+          const SizedBox(
+            height: 10,
+          ),
           Padding(
             //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
             padding: EdgeInsets.symmetric(horizontal: 15),
@@ -42,6 +49,7 @@ class _LoginDemoState extends State<LoginDemo> {
                   border: OutlineInputBorder(), labelText: 'Geslo'),
             ),
           ),
+          const Divider(),
           Container(
             height: 50,
             width: 250,
@@ -49,9 +57,8 @@ class _LoginDemoState extends State<LoginDemo> {
                 color: Colors.blue, borderRadius: BorderRadius.circular(20)),
             child: TextButton(
               onPressed: () async {
-                UserData? token = await login(_username.text, _password.text);
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => MyHomePage()));
+                await login(_username.text, _password.text);
+                Navigator.pushNamed(context, "/koledar");
               },
               child: Text(
                 'Prijava',

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:freeasistent/api/api.dart';
-import 'package:freeasistent/api/ocenjevanja.dart';
+import 'package:freeasistent/api/homework.dart';
 import 'package:freeasistent/loading.dart';
 import 'package:freeasistent/login.dart';
 import 'package:freeasistent/scaffoldwidget.dart';
 
-class Ocenjevanja extends StatelessWidget {
+class Homework extends StatelessWidget {
   DateTime today =
       DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1));
   DateTime lastday = DateTime.now()
@@ -14,8 +14,8 @@ class Ocenjevanja extends StatelessWidget {
   Future<List<Widget>> getEvents() async {
     UserData? data = await getToken();
     if (data != null) {
-      final ocenjevanja = OcenjevanjaAPI(user_data: data);
-      return await ocenjevanja.getExaminations();
+      final ocenjevanja = HomeworkAPI(user_data: data);
+      return await ocenjevanja.getHomework();
     }
     return [];
   }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:freeasistent/api/api.dart';
 import 'package:freeasistent/api/timetable.dart';
 import 'package:freeasistent/grades.dart';
+import 'package:freeasistent/homework.dart';
+import 'package:freeasistent/loading.dart';
 import 'package:freeasistent/login.dart';
 import 'package:freeasistent/ocenjevanja.dart';
 import 'package:freeasistent/scaffoldwidget.dart';
@@ -32,6 +34,7 @@ class App extends StatelessWidget {
         "/koledar": (context) => MyHomePage(),
         "/ocenjevanja": (context) => Ocenjevanja(),
         "/ocene": (context) => Grades(),
+        "/domacenaloge": (context) => Homework(),
       },
     );
   }
@@ -73,9 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
         future: getEvents(),
         builder: (BuildContext context, AsyncSnapshot<List<Meeting>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator(
-              semanticsLabel: 'Pridobivam podatke, prosimo počakajte',
-            );
+            return LoadingIndicator();
           } else if (snapshot.hasError) {
             return LoginDemo();
           } else {

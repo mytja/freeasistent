@@ -20,49 +20,50 @@ Future<List<String>> getSubjects(UserData userData) async {
   return subjectIds;
 }
 
-class GradesAPI {
-  GradesAPI({required this.user_data});
+class HomeworkAPI {
+  HomeworkAPI({required this.user_data});
 
   final UserData user_data;
 
-  Future<List<Widget>> getGrades() async {
+  Future<List<Widget>> getHomework() async {
     List<String> subjectIds = await getSubjects(this.user_data);
     List<Widget> widgets = [];
     for (var i in subjectIds) {
       print(i);
-      var response = await Dio().get("$eAsUrl/m/grades/classes/$i",
+      var response = await Dio().get("$eAsUrl/m/homework/classes/$i",
           options: Options(headers: {
             ...WebPayload,
             'Authorization': 'Bearer ${this.user_data.access_token}',
             'x-child-id': '${this.user_data.id}',
           }));
       print(response.data);
+      var data = response.data["items"];
       try {
-        var data = response.data["semesters"][0]["grades"][0];
-        widgets.add(
-          Card(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                ListTile(
-                  leading: CircleAvatar(
-                    child: Text(data["value"]),
+        for (var i in data) {
+          var response = await Dio().get("$eAsUrl/m/homework/${i['id']}",
+              options: Options(headers: {
+                ...WebPayload,
+                'Authorization': 'Bearer ${this.user_data.access_token}',
+                'x-child-id': '${this.user_data.id}',
+              }));
+          widgets.add(
+            Card(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  ListTile(
+                    title: Text(i["subject"]),
+                    subtitle: Text(i["title"]),
                   ),
-                  title: Text(response.data["short_name"]),
-                  subtitle: Text(response.data["name"]),
-                ),
-                Text(
-                  'Povprečna ocena: ' + response.data["average_grade"],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Oceno vpisal ${data["inserted_by"]["name"]}, dne ${data["date"]}',
-                ),
-                const SizedBox(height: 8),
-              ],
+                  Text(
+                    'Do: ${i["deadline"]}; Vpisal ${response.data["author"]}, dne ${i["date"]}',
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
             ),
-          ),
-        );
+          );
+        }
       } catch (e) {}
     }
 

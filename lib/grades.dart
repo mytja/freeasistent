@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freeasistent/api/api.dart';
 import 'package:freeasistent/api/grades.dart';
+import 'package:freeasistent/loading.dart';
 import 'package:freeasistent/login.dart';
 import 'package:freeasistent/scaffoldwidget.dart';
 
@@ -26,9 +27,7 @@ class Grades extends StatelessWidget {
         future: getEvents(),
         builder: (BuildContext context, AsyncSnapshot<List<Widget>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator(
-              semanticsLabel: 'Pridobivam podatke, prosimo počakajte',
-            );
+            return LoadingIndicator();
           } else if (snapshot.hasError) {
             return LoginDemo();
           } else {
