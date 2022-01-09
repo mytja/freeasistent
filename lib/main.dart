@@ -4,7 +4,6 @@ import 'package:freeasistent/api/api.dart';
 import 'package:freeasistent/api/timetable.dart';
 import 'package:freeasistent/grades.dart';
 import 'package:freeasistent/homework.dart';
-import 'package:freeasistent/loading.dart';
 import 'package:freeasistent/login.dart';
 import 'package:freeasistent/ocenjevanja.dart';
 import 'package:freeasistent/scaffoldwidget.dart';
@@ -106,38 +105,56 @@ class _MyHomePageState extends State<MyHomePage> {
               return LoginDemo();
             }
             print(snapshot.data);
-            return SfCalendar(
-              controller: _calendarController,
-              initialSelectedDate: this.today.add(Duration(hours: 6)),
-              timeSlotViewSettings: TimeSlotViewSettings(
-                startHour: 6,
-                endHour: 16,
-              ),
-              view: CalendarView.workWeek,
-              firstDayOfWeek: DateTime.monday,
-              dataSource: MeetingDataSource(snapshot.data!),
-              onViewChanged: (ViewChangedDetails details) {
-                DateTime firstdate = details.visibleDates.first;
-                DateTime lastdate = details.visibleDates.last;
-                bool fd = this.today.month == firstdate.month &&
-                    this.today.day == firstdate.day &&
-                    this.today.year == firstdate.year;
-                bool ld = this.lastday.month == lastdate.month &&
-                    this.lastday.day == lastdate.day &&
-                    this.lastday.year == lastdate.year;
-                if (!fd && !ld) {
-                  print("View changed");
-                  Future.delayed(
-                    Duration.zero,
-                    () {
-                      setState(() {
-                        this.today = details.visibleDates.first;
-                        this.lastday = details.visibleDates.last;
-                      });
+            return Column(
+              children: [
+                Expanded(
+                  child: SfCalendar(
+                    controller: _calendarController,
+                    initialSelectedDate: this.today.add(Duration(hours: 6)),
+                    timeSlotViewSettings: TimeSlotViewSettings(
+                      startHour: 6,
+                      endHour: 16,
+                    ),
+                    view: CalendarView.workWeek,
+                    firstDayOfWeek: DateTime.monday,
+                    dataSource: MeetingDataSource(snapshot.data!),
+                    onViewChanged: (ViewChangedDetails details) {
+                      DateTime firstdate = details.visibleDates.first;
+                      DateTime lastdate = details.visibleDates.last;
+                      bool fd = this.today.month == firstdate.month &&
+                          this.today.day == firstdate.day &&
+                          this.today.year == firstdate.year;
+                      bool ld = this.lastday.month == lastdate.month &&
+                          this.lastday.day == lastdate.day &&
+                          this.lastday.year == lastdate.year;
+                      if (!fd && !ld) {
+                        print("View changed");
+                        Future.delayed(
+                          Duration.zero,
+                          () {
+                            setState(() {
+                              this.today = details.visibleDates.first;
+                              this.lastday = details.visibleDates.last;
+                            });
+                          },
+                        );
+                      }
                     },
-                  );
-                }
-              },
+                  ),
+                ),
+                Text(
+                  "[T] - test",
+                ),
+                Text(
+                  "[O] - odpadla ura",
+                ),
+                Text(
+                  "[P] - preverjanje",
+                ),
+                Text(
+                  "[N] - nadomeščanje",
+                ),
+              ],
             );
           }
         },

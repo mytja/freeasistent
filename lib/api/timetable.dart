@@ -64,11 +64,16 @@ class Timetable {
       List<DateTime> time = this.getTimeForEvent(event, times);
       String type = "";
       if (event["hour_special_type"] == "substitution") {
-        type = "[N] ";
+        type += "[N]";
       } else if (event["hour_special_type"] == "exam") {
-        type = "[T] ";
+        type += "[T]";
       } else if (event["hour_special_type"] == "pre-exam") {
-        type = "[P] ";
+        type += "[P]";
+      } else if (event["hour_special_type"] == "cancelled") {
+        type += "[O]";
+      }
+      if (type != "") {
+        type += " ";
       }
       events.add(Meeting(
         event["event_id"],

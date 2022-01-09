@@ -38,30 +38,35 @@ class GradesAPI {
           }));
       print(response.data);
       try {
-        var data = response.data["semesters"][0]["grades"][0];
-        widgets.add(
-          Card(
-            child: ExpansionTile(
-              title: ListTile(
-                leading: CircleAvatar(
-                  child: Text(data["value"]),
+        var semesters = response.data["semesters"];
+        for (var g in semesters) {
+          var grades = g["grades"];
+          for (var data in grades) {
+            widgets.add(
+              Card(
+                child: ExpansionTile(
+                  title: ListTile(
+                    leading: CircleAvatar(
+                      child: Text(data["value"]),
+                    ),
+                    title: Text(response.data["short_name"]),
+                    subtitle: Text(response.data["name"]),
+                  ),
+                  children: <Widget>[
+                    Text(
+                      'Povprečna ocena: ' + response.data["average_grade"],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Oceno vpisal ${data["inserted_by"]["name"]}, dne ${data["date"]}',
+                    ),
+                    const SizedBox(height: 8),
+                  ],
                 ),
-                title: Text(response.data["short_name"]),
-                subtitle: Text(response.data["name"]),
               ),
-              children: <Widget>[
-                Text(
-                  'Povprečna ocena: ' + response.data["average_grade"],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Oceno vpisal ${data["inserted_by"]["name"]}, dne ${data["date"]}',
-                ),
-                const SizedBox(height: 8),
-              ],
-            ),
-          ),
-        );
+            );
+          }
+        }
       } catch (e) {}
     }
 
